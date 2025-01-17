@@ -5,8 +5,10 @@ import { fileRoutes } from './routes/filesRoute';
 import { initializeDatabase } from './config/dbConfig';
 import { folderRoutes } from './routes/foldersRoute';
 import { userRoutes } from './routes/usersRoute';
+import cors from '@elysiajs/cors';
 
 const app = new Elysia()
+    .use(cors())
     .use(
         swagger({
             documentation: {
@@ -27,7 +29,6 @@ const app = new Elysia()
     .get('/hello', () => ({ message: 'Hello, Swagger!' }))
     .listen(3000);
 
-// app.use(authMiddleware);
 fileRoutes(app);
 folderRoutes(app);
 userRoutes(app);
