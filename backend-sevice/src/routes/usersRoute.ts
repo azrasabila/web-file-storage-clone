@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { createUser, getUserById, deleteUser } from '../services/usersService';
+import { createUser, getUserById, deleteUser, getUsers } from '../services/usersService';
 
 interface UserBody {
     username: string;
@@ -39,6 +39,15 @@ export const userRoutes = (app: Elysia) => {
         try {
             const user = await getUserById(id);
             return { status: 200, data: user };
+        } catch (error) {
+            return { status: 500, message: 'Failed to retrieve user' };
+        }
+    });
+
+    app.get('/users', async () => {
+        try {
+            const users = await getUsers();
+            return { status: 200, data: users };
         } catch (error) {
             return { status: 500, message: 'Failed to retrieve user' };
         }

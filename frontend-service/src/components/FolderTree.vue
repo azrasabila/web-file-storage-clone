@@ -1,12 +1,17 @@
 <template>
-    <ul>
-      <li v-for="folder in folders" :key="folder.id" class="p-2">
-        <button
-          class="text-blue-500 hover:underline"
-          @click="selectFolder(folder)"
-        >
-          {{ folder.name }}
-        </button>
+    <ul class="ml-4">
+      <li v-for="folder in folders" :key="folder.id" class="mb-2">
+        <!-- Display the folder name -->
+        <div class="flex items-center space-x-2">
+          <button
+            class="text-blue-500 hover:underline"
+            @click="selectFolder(folder)"
+          >
+            {{ folder.name }}
+          </button>
+        </div>
+  
+        <!-- Recursively render child folders if they exist -->
         <FolderTree
           v-if="folder.children && folder.children.length > 0"
           :folders="folder.children"
@@ -19,6 +24,7 @@
   <script setup>
   import { defineProps, defineEmits } from 'vue';
   
+  // Props to receive the folder list
   defineProps({
     folders: {
       type: Array,
@@ -26,9 +32,10 @@
     },
   });
   
+  // Emit event for folder selection
   const emit = defineEmits(['select']);
   
-  // Emit the selected folder
+  // Emit the selected folder to the parent
   const selectFolder = (folder) => {
     emit('select', folder);
   };

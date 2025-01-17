@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { getFolderContents, createFolder, deleteFolder, getAllFolders } from '../services/foldersService';
+import { createFolder, deleteFolder, getAllFolders, getFolderContents } from '../services/foldersService';
 
 interface FolderBody {
     name: string;
@@ -8,7 +8,8 @@ interface FolderBody {
 }
 
 interface FolderQueryParams {
-    folderId: string;
+    folderId?: string;
+    userId: string;
 }
 
 interface DeleteParams {
@@ -34,10 +35,16 @@ export const folderRoutes = (app: Elysia) => {
 
     app.get(
         '/folders/all',
-        async () => {
+        async ({ query }: { query: FolderQueryParams }) => {
+            const userId = query.userId;
+            if (!userId) {
+                return { status: 400, message: 'User ID is required' };
+            }
+
             try {
                 const folders = await getAllFolders();
-                return { status: 200, data: folders };
+                const folderTree = buildFolderTree(folders)
+                return { status: 200, data: folderTree };
             } catch (error) {
                 return { status: 500, message: 'Failed to retrieve folders and files' };
             }
@@ -76,4 +83,31 @@ export const folderRoutes = (app: Elysia) => {
             return { status: 500, message: `Failed to delete folder: ${error}` };
         }
     });
+};
+
+const buildFolderTree = (folders: any[]): any[] => {
+    const folderMap = new Map<string, any>();
+
+    // Create a map of folders by their ID
+    folders.forEach((folder) => {
+        folder.children = []; // Initialize the children array
+        folderMap.set(folder.id, folder);
+    });
+
+    const tree: any[] = [];
+
+    // Iterate through folders and assign them to their parent's children array
+    folders.forEach((folder) => {
+        if (folder.parentId) {
+            const parent = folderMap.get(folder.parentId);
+            if (parent) {
+                parent.children.push(folder);
+            }
+        } else {
+            // If no parentId, it's a root folder
+            tree.push(folder);
+        }
+    });
+
+    return tree;
 };

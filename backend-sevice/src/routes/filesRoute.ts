@@ -24,14 +24,13 @@ export const fileRoutes = (app: Elysia) => {
     // Get files in a folder
     app.get('/files', async ({ query }: { query: FolderQueryParams }) => {
         const { folderId } = query;
-        const folderIdNum = parseInt(folderId)
 
         if (!folderId) {
             return { status: 400, message: 'Folder ID is required' };
         }
 
         try {
-            const files = await getFilesInFolder(folderIdNum);
+            const files = await getFilesInFolder(folderId);
             return { status: 200, data: files };
         } catch (error) {
             return { status: 500, message: 'Failed to retrieve files' };
@@ -97,8 +96,8 @@ export const fileRoutes = (app: Elysia) => {
                 return { status: 400, message: 'File upload failed. No file found in request.' };
             }
 
-            const userId = Number(request.headers.get('user-id'));
-            const folderId = request.headers.get('folder-id') ? Number(request.headers.get('folder-id')) : null;
+            const userId = request.headers.get('user-id');
+            const folderId = request.headers.get('folder-id') ? request.headers.get('folder-id') : null;
 
             if (!userId) {
                 return { status: 400, message: 'User ID is required in headers.' };
@@ -117,14 +116,10 @@ export const fileRoutes = (app: Elysia) => {
     // Delete a file by ID
     app.delete('/files/:id', async ({ params }: { params: DeleteParams }) => {
         const { id } = params;
-    const idNum = parseInt(id);
 
-    if (isNaN(idNum)) {
-        return { status: 400, message: 'Invalid File ID' };
-    }
 
     try {
-        const file = await getFileById(idNum);
+        const file = await getFileById(id);
         if (!file) {
             return { status: 404, message: 'File not found' };
         }
@@ -136,7 +131,7 @@ export const fileRoutes = (app: Elysia) => {
             console.warn(`File not found in directory: ${filePath}`);
         }
 
-        await deleteFile(idNum);
+        await deleteFile(id);
 
         return { status: 200, message: 'File deleted successfully' };
     } catch (error) {

@@ -7,17 +7,15 @@ export const getFolderContents = async (folderId: string) => {
     });
 };
 
-export const getAllFolders = async () => {
-    return await prisma.folder.findMany({
+
+export const getAllFolders = async (): Promise<any[]> => {
+    const folders = await prisma.folder.findMany({
         include: {
-            children: {
-                include: {
-                    children: true, // Recursively fetch nested folders
-                },
-            },
-            files: true, // Include files in each folder
+            files: true, // Include associated files
         },
     });
+
+    return folders;
 };
 
 export const createFolder = async (

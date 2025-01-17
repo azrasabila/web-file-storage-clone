@@ -20,6 +20,10 @@ export const getUserById = async (userId: string) => {
     });
 };
 
+export const getUsers = async () => {
+    return await prisma.user.findMany();
+};
+
 export const deleteUser = async (userId: string) => {
     return await prisma.user.delete({
         where: { id: userId },
