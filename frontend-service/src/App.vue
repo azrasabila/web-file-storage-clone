@@ -26,7 +26,7 @@
     <!-- Footer -->
     <footer class="py-4 mt-8 bg-white shadow-md">
       <div class="container mx-auto text-center text-gray-600">
-        &copy; 2025 File Explorer. All rights reserved.
+        &copy; 2025 Infokes Drive. All rights reserved.
       </div>
     </footer>
   </div>
