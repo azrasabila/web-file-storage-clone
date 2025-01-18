@@ -4,7 +4,7 @@
     <nav class="py-4 bg-white shadow-md">
       <div class="container flex items-center justify-between mx-auto">
         <router-link to="/" class="text-2xl font-bold text-blue-500">
-          File Explorer
+          Infokes Drive
         </router-link>
         <div>
           <label for="user-select" class="mr-2">Select User:</label>

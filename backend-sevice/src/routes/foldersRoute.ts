@@ -19,14 +19,14 @@ interface DeleteParams {
 export const folderRoutes = (app: Elysia) => {
     // Get folder contents
     app.get('/folder', async ({ query }: { query: FolderQueryParams }) => {
-        const { folderId } = query;
+        const { folderId, userId } = query;
 
-        if (!folderId) {
-            return { status: 400, message: 'Folder ID is required' };
+        if (!userId) {
+            return { status: 400, message: 'User ID is required' };
         }
 
         try {
-            const folder = await getFolderContents(folderId);
+            const folder = await getFolderContents(userId, folderId);
             return { status: 200, data: folder };
         } catch (error) {
             return { status: 500, message: 'Failed to retrieve folder contents' };
@@ -42,7 +42,7 @@ export const folderRoutes = (app: Elysia) => {
             }
 
             try {
-                const folders = await getAllFolders();
+                const folders = await getAllFolders(userId);
                 const folderTree = buildFolderTree(folders)
                 return { status: 200, data: folderTree };
             } catch (error) {

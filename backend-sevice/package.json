@@ -27,5 +27,9 @@
   "devDependencies": {
     "bun-types": "latest"
   },
-  "module": "src/index.js"
+  "module": "src/index.js",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "type": "module"
 }

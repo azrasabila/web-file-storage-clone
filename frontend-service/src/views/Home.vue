@@ -3,13 +3,12 @@
     <!-- Left Panel: Folder Tree -->
     <div class="relative w-1/3 overflow-y-auto bg-white border-r shadow-lg">
       <h2 class="flex items-center justify-between p-4 text-xl font-bold border-b">
-        Folder Structure
+        Folder
         <button @click="showAddFolderPopup = true" class="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
           Add Folder
         </button>
       </h2>
       <ul>
-        <!-- <p>{{ folderTree }}</p> -->
         <FolderTree :folders="folderTree" @select="handleFolderSelect" />
       </ul>
     </div>
@@ -29,9 +28,15 @@
           <h3 class="mb-2 text-lg font-semibold">Subfolders</h3>
           <ul v-if="selectedSubfolders.length > 0" class="space-y-2">
             <li v-for="folder in selectedSubfolders" :key="folder.id"
-              class="p-2 bg-white border rounded shadow cursor-pointer hover:bg-gray-100"
+              class="flex items-center justify-between p-2 bg-white border rounded shadow"
               @click="handleFolderSelect(folder)">
-              {{ folder.name }}
+              <div>
+                {{ folder.name }}
+              </div>
+              <button @click="deleteFolder(folder.id)"
+                class="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600">
+                Delete
+              </button>
             </li>
           </ul>
           <div v-else class="p-4 text-center text-gray-500 bg-white border rounded shadow">
@@ -134,13 +139,47 @@ const selectedFiles = ref([]); // Files of the selected folder
 const showAddFolderPopup = ref(false);
 const showFileUploadPopup = ref(false); // Popup visibility for uploading file
 const selectedFile = ref(null); // The selected file for upload
+const newFolderName = ref(''); // The name of the new folder to be created
 
-// Fetch folders on mounted using userId from global store
 onMounted(async () => {
   if (userStore.userId) {
     await fetchFolders(userStore.userId);
   }
 });
+
+const addFolder = async () => {
+  if (!newFolderName.value.trim() || !userStore.userId) {
+    alert('Please provide a valid folder name and ensure a user is selected.');
+    return;
+  }
+
+  try {
+    const parentId = selectedFolder.value ? selectedFolder.value.id : null; // Determine the parent folder ID
+
+    const response = await axios.post('http://localhost:3000/folders', {
+      name: newFolderName.value,
+      userId: userStore.userId,
+      parentId: parentId ?? '',
+    });
+
+    const newFolder = response.data.data;
+
+    // Update the folder tree
+    if (parentId) {
+      selectedFolder.value.children = [...(selectedFolder.value.children || []), newFolder];
+      selectedSubfolders.value.push(newFolder);
+    } else {
+      folderTree.value.push(newFolder);
+    }
+
+    alert('Folder added successfully');
+    newFolderName.value = ''; // Reset folder name input
+    showAddFolderPopup.value = false; // Close the popup
+  } catch (error) {
+    console.error('Failed to add folder:', error);
+    alert('Error adding folder. Please try again.');
+  }
+};
 
 // Watch for changes in the userId and fetch folders
 watch(() => userStore.userId, async (newUserId) => {
@@ -239,6 +278,23 @@ const deleteFile = async (fileId) => {
   } catch (error) {
     console.error('Failed to delete file:', error);
     alert('Error deleting file. Please try again.');
+  }
+};
+
+const deleteFolder = async (folderId) => {
+  if (!confirm('Are you sure you want to delete this folder?')) {
+    return;
+  }
+
+  try {
+    await axios.delete(`http://localhost:3000/folders/${folderId}`);
+
+    // Remove the file from the UI
+    selectedFiles.value = selectedSubfolders.value.filter((folder) => folder.id !== folderId);
+    alert('Folder deleted successfully');
+  } catch (error) {
+    console.error('Failed to delete folder:', error);
+    alert('Error deleting folder. Please try again.');
   }
 };
 

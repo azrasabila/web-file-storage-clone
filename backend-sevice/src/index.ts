@@ -13,8 +13,8 @@ const app = new Elysia()
         swagger({
             documentation: {
                 info: {
-                    title: 'Elysia App API',
-                    description: 'API documentation for the Elysia app',
+                    title: 'Infokes Test',
+                    description: 'API documentation for Infokes Test',
                     version: '1.0.0',
                 },
                 servers: [

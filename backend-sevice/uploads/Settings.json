@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "identifier": "Settings",
+    "listeningFrontReadingAssistance": "Latin",
+    "listeningBackReadingAssistance": "Latin",
+    "clozeFrontReadingAssistance": "Latin",
+    "clozeBackReadingAssistance": "Latin",
+    "clozeEditorReadingAssistance": "Latin",
+    "manageJlabCards": false,
+    "promptBeforeCardManagementAction": true,
+    "endAction": "Tag",
+    "lcEndInterval": 14,
+    "clozeEndInterval": 14
+}

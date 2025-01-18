@@ -1,15 +1,16 @@
 import { prisma } from '../config/prisma';
 
-export const getFolderContents = async (folderId: string) => {
+export const getFolderContents = async (userId: string, folderId: string | undefined) => {
     return await prisma.folder.findUnique({
-        where: { id: folderId },
+        where: { id: folderId, userId: userId },
         include: { files: true, children: true },
     });
 };
 
 
-export const getAllFolders = async (): Promise<any[]> => {
+export const getAllFolders = async (userId: string): Promise<any[]> => {
     const folders = await prisma.folder.findMany({
+        where: { userId: userId },
         include: {
             files: true, // Include associated files
         },
